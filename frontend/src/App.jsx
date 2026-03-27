@@ -54,8 +54,8 @@ function App() {
     <div className="min-h-screen bg-slate-50 flex justify-center p-4 sm:p-6 font-sans">
       <div className="w-full max-w-md bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col h-[90vh] max-h-[850px] relative">
         <header className="bg-expense-600 text-white p-6 pb-8 text-center rounded-b-[2rem] shadow-md z-10 relative">
-          <h1 className="text-2xl font-bold tracking-tight mb-2">My Expenses</h1>
-          <p className="text-expense-100/80 text-sm font-medium">Quick logging to Google Sheets</p>
+          <h1 className="text-2xl font-bold tracking-tight mb-2">Mis Gastos</h1>
+          <p className="text-expense-100/80 text-sm font-medium"></p>
         </header>
 
         <div className="flex-1 overflow-y-auto z-0 -mt-6 pt-10 px-6 pb-6 space-y-8 no-scrollbar relative">

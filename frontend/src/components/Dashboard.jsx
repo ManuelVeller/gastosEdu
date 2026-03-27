@@ -11,26 +11,26 @@ function Dashboard({ data, loading }) {
         <div className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
                 <div className="bg-expense-50 p-5 rounded-[1.5rem] shadow-sm flex flex-col items-center justify-center border border-expense-100">
-                    <span className="text-expense-600/80 text-sm font-semibold tracking-wide uppercase">Today</span>
+                    <span className="text-expense-600/80 text-sm font-semibold tracking-wide uppercase">Hoy</span>
                     <span className="text-3xl font-black text-expense-900 mt-1">${today_total?.toFixed(2) || '0.00'}</span>
                 </div>
 
                 <div className="flex flex-col gap-4">
                     <div className="bg-slate-50 p-4 pl-5 rounded-2xl border border-slate-100 flex flex-col justify-center flex-1">
-                        <span className="text-slate-500 text-xs font-semibold tracking-wide uppercase">This Week</span>
+                        <span className="text-slate-500 text-xs font-semibold tracking-wide uppercase">Esta Semana</span>
                         <span className="text-lg font-bold text-slate-800">${week_total?.toFixed(2) || '0.00'}</span>
                     </div>
                     <div className="bg-slate-50 p-4 pl-5 rounded-2xl border border-slate-100 flex flex-col justify-center flex-1">
-                        <span className="text-slate-500 text-xs font-semibold tracking-wide uppercase">This Month</span>
+                        <span className="text-slate-500 text-xs font-semibold tracking-wide uppercase">Este Mes</span>
                         <span className="text-lg font-bold text-slate-800">${month_total?.toFixed(2) || '0.00'}</span>
                     </div>
                 </div>
             </div>
 
             <div>
-                <h3 className="text-lg font-semibold text-slate-800 mb-4 px-1">Recent Logs</h3>
+                <h3 className="text-lg font-semibold text-slate-800 mb-4 px-1">Gastos Recientes</h3>
                 {last_expenses?.length === 0 ? (
-                    <p className="text-slate-400 text-sm text-center py-4 bg-slate-50 rounded-2xl border border-slate-100 border-dashed">No recent expenses</p>
+                    <p className="text-slate-400 text-sm text-center py-4 bg-slate-50 rounded-2xl border border-slate-100 border-dashed">Sin gastos recientes</p>
                 ) : (
                     <div className="space-y-3">
                         {last_expenses.map((expense, i) => (

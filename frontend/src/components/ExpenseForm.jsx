@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 
-const CATEGORIES = ['Food', 'Transport', 'Supplies', 'Other'];
+const CATEGORIES = ['Nafta', 'Transporte', 'Lavadero', 'Otro'];
 
 function ExpenseForm({ onSaved, apiBase }) {
     const [formData, setFormData] = useState({
         amount: '',
-        category: 'Food',
+        category: 'Comida',
         description: '',
         date: new Date().toISOString().split('T')[0]
     });
@@ -57,7 +57,7 @@ function ExpenseForm({ onSaved, apiBase }) {
 
                 {/* Amount */}
                 <div className="relative">
-                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block px-1">Amount</label>
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block px-1">Monto</label>
                     <div className="relative flex items-center">
                         <span className="absolute left-5 text-2xl font-black text-slate-300">$</span>
                         <input
@@ -77,7 +77,7 @@ function ExpenseForm({ onSaved, apiBase }) {
                 <div className="grid grid-cols-2 gap-4">
                     {/* Date */}
                     <div>
-                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block px-1">Date</label>
+                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block px-1">Fecha</label>
                         <input
                             type="date"
                             name="date"
@@ -90,7 +90,7 @@ function ExpenseForm({ onSaved, apiBase }) {
 
                     {/* Category */}
                     <div>
-                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block px-1">Category</label>
+                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block px-1">Categoria</label>
                         <div className="relative">
                             <select
                                 name="category"
@@ -111,13 +111,13 @@ function ExpenseForm({ onSaved, apiBase }) {
 
                 {/* Description */}
                 <div>
-                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block px-1">Description (Optional)</label>
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block px-1">Descripcion (Opcional)</label>
                     <input
                         type="text"
                         name="description"
                         value={formData.description}
                         onChange={handleChange}
-                        placeholder="What was this for?"
+                        placeholder="¿Por qué motivo?"
                         className="w-full bg-white border-2 border-slate-100 rounded-xl py-3 px-4 text-sm font-medium text-slate-700 outline-none focus:border-expense-500 focus:ring-4 focus:ring-expense-500/10 transition-all placeholder:text-slate-300"
                     />
                 </div>
@@ -129,7 +129,7 @@ function ExpenseForm({ onSaved, apiBase }) {
                 disabled={loading}
                 className="w-full py-4 bg-expense-600 hover:bg-expense-700 active:scale-[0.98] text-white rounded-2xl font-bold text-lg shadow-lg shadow-expense-500/30 transition-all disabled:opacity-70 disabled:active:scale-100 flex items-center justify-center gap-2"
             >
-                {statusText || 'Save Expense'}
+                {statusText || 'Guardar Gasto'}
             </button>
         </form>
     );

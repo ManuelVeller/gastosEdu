@@ -25,7 +25,8 @@ function ExpenseForm({ onSaved, apiBase }) {
         setStatusText('Saving...');
 
         try {
-            const response = await fetch(`${apiBase}/expense`, {
+            /*const response = await fetch(`${apiBase}/expense`, {*/
+                const response = await fetch('http://187.127.0.145:5678/webhook/expense', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

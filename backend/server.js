@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const N8N_WEBHOOK_URL = 'https://manutest26.app.n8n.cloud/webhook/gasto';
+const N8N_WEBHOOK_URL = 'http://187.127.0.145:5678/webhook/expense';
 
 app.use(cors());
 app.use(bodyParser.json());

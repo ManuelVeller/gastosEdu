@@ -117,6 +117,10 @@ app.listen(PORT, () => {
   console.log(`Backend server running on http://localhost:${PORT}`);
 });
 
+app.get('/', (req, res) => {
+  res.send('Backend funcionando OK');
+});
+
 
 /*app.listen(PORT, () => {
   console.log(`Backend server running on http://localhost:${PORT}`);

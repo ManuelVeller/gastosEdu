@@ -6,7 +6,7 @@ const { createClient } = require('@supabase/supabase-js');
 
 const supabase = createClient(
   'https://lonwiccfgyjhxslusuny.supabase.co',
-  'TU_PUBLISHABLE_KEY'
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxvbndpY2NmZ3lqaHhzbHVzdW55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NzU0NzQsImV4cCI6MjA5MDU1MTQ3NH0.62mKrQTRp1rosuWt2LaQdX9ydkwxH80iewtf8OZq_ws'
 );
 
 const app = express();

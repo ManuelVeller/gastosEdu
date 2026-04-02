@@ -2,10 +2,15 @@ require('dotenv').config({ path: '../config/.env' });
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const { createClient } = require('@supabase/supabase-js');
 
+const supabase = createClient(
+  'https://lonwiccfgyjhxslusuny.supabase.co',
+  'sb_publishable_YXU4rrTWudw0A0h-MUdD2Q_XKli7jhK'
+);
 const app = express();
 const PORT = process.env.PORT || 3001;
-const N8N_WEBHOOK_URL = 'http://187.127.0.145:5678/webhook/expense';
+//const N8N_WEBHOOK_URL = 'http://187.127.0.145:5678/webhook/expense';
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -24,6 +29,25 @@ app.post('/api/expense', async (req, res) => {
       date,
       timestamp
     };
+  const { error } = await supabase
+      .from('Gastos')
+      .insert([newExpense]);
+
+    if (error) throw error;
+
+    res.status(200).json({
+      success: true,
+      message: 'Expense saved in Supabase'
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to save expense'
+    });
+  }
+});  
 
     // Save locally for dashboard
     expenses.push(newExpense);

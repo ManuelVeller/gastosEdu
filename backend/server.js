@@ -6,6 +6,131 @@ const { createClient } = require('@supabase/supabase-js');
 
 const supabase = createClient(
   'https://lonwiccfgyjhxslusuny.supabase.co',
+  'TU_PUBLISHABLE_KEY'
+);
+
+const app = express();
+const PORT = process.env.PORT || 3001;
+
+app.use(cors());
+app.use(bodyParser.json());
+
+let expenses = [];
+
+// guardar gasto
+app.post('/api/expense', async (req, res) => {
+  try {
+    const { amount, category, description, date, timestamp } = req.body;
+
+    const newExpense = {
+      amount: Number(amount),
+      category,
+      description: description || '',
+      date,
+      timestamp
+    };
+
+    // guardar en memoria
+    expenses.push(newExpense);
+
+    // guardar en supabase
+    const { data, error } = await supabase
+      .from('Gastos')
+      .insert([newExpense]);
+
+    console.log('supabase:', data, error);
+
+    if (error) throw error;
+
+    res.status(200).json({
+      success: true,
+      message: 'Expense saved in Supabase'
+    });
+
+  } catch (err) {
+    console.error('SUPABASE ERROR:', err);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to save expense'
+    });
+  }
+});
+
+// resumen
+app.get('/api/summary', (req, res) => {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+
+    const todayTotal = expenses
+      .filter(e => e.date === today)
+      .reduce((sum, e) => sum + e.amount, 0);
+
+    const weekTotal = expenses.reduce((sum, e) => sum + e.amount, 0);
+    const monthTotal = expenses.reduce((sum, e) => sum + e.amount, 0);
+
+    const lastExpenses = [...expenses].reverse().slice(0, 5);
+
+    res.status(200).json({
+      today_total: todayTotal,
+      week_total: weekTotal,
+      month_total: monthTotal,
+      last_expenses: lastExpenses
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch summary'
+    });
+  }
+});
+
+// historial
+app.get('/api/history', (req, res) => {
+  try {
+    const uniqueDates = [...new Set(expenses.map(e => e.date))];
+
+    const history = uniqueDates.map(date => ({
+      date,
+      daily_total: expenses
+        .filter(e => e.date === date)
+        .reduce((sum, e) => sum + e.amount, 0)
+    }));
+
+    res.status(200).json({
+      success: true,
+      history
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch history'
+    });
+  }
+});
+
+app.get('/', (req, res) => {
+  res.send('Backend funcionando OK');
+});
+
+app.listen(PORT, () => {
+  console.log(`Backend server running on port ${PORT}`);
+});
+    
+
+
+
+/*require('dotenv').config({ path: '../config/.env' });
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const { createClient } = require('@supabase/supabase-js');
+
+const supabase = createClient(
+  'https://lonwiccfgyjhxslusuny.supabase.co',
   'sb_publishable_YXU4rrTWudw0A0h-MUdD2Q_XKli7jhK'
 );
 const app = express();

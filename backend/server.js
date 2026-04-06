@@ -18,8 +18,8 @@ app.use(bodyParser.json());
 
 const auth = new google.auth.GoogleAuth({
   credentials: {
-    client_email: process.env.CLIENT_EMAIL,
-    private_key: process.env.PRIVATE_KEY.replace(/\\n/g, '\n')
+    client_email: "sheets-gastosedu@gastosedun8n.iam.gserviceaccount.com",
+    private_key: "faa6b33450286f08150bcde600ad840a90d6cc08"
   },
   scopes: ['https://www.googleapis.com/auth/spreadsheets']
 });

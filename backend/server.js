@@ -30,37 +30,33 @@ let expenses = [];
 
 app.post('/api/expense', async (req, res) => {
   try {
-    const { amount, category, description, date } = req.body;
+    const { amount, category, description, date, timestamp } = req.body;
 
     const newExpense = {
       amount: Number(amount),
       category,
       description: description || '',
       date,
-      Timestamp
+      timestamp: timestamp || new Date().toISOString()
     };
 
-    // 👉 guardar en Google Sheets
-    await sheets.spreadsheets.values.append({
-      spreadsheetId: process.env.SPREADSHEET_ID,
-      range: 'diario!A:E', // ⚠️ cambiar si tu hoja tiene otro nombre
-      valueInputOption: 'USER_ENTERED',
-      requestBody: {
-        values: [[
-          newExpense.amount,
-          newExpense.category,
-          newExpense.description,
-          newExpense.date
-        ]]
-      }
+    // guardar en memoria para dashboard
+    expenses.push(newExpense);
+
+    // enviar a n8n
+    const response = await fetch(N8N_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newExpense)
     });
 
-    // 👉 guardar en memoria (para dashboard)
-    expenses.push(newExpense);
+    if (!response.ok) {
+      throw new Error(`n8n webhook error: ${response.status}`);
+    }
 
     res.status(200).json({
       success: true,
-      message: 'Expense saved in Google Sheets'
+      message: 'Expense sent to n8n successfully'
     });
 
   } catch (err) {

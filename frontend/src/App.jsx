@@ -16,7 +16,7 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   // Backend API URL (for demo sake, hardcoded or env)
-  const API_BASE = 'http://localhost:3001/api';
+  const API_BASE = 'http://187.127.0.145:3001/api';
 
   const fetchSummary = async () => {
     try {
@@ -32,7 +32,7 @@ function App() {
       }
       if (historyRes.ok) {
         const hData = await historyRes.json();
-        setHistoryData(hData.history);
+        setHistoryData(hData);
       }
     } catch (err) {
       console.error('Failed to fetch data:', err);

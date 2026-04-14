@@ -87,46 +87,23 @@ app.get('/api/summary', async (req, res) => {
   }
 });
 
-app.get('/api/history', (req, res) => {
+app.get('/api/history', async (req, res) => {
   try {
-    const getWeekKey = (dateStr) => {
-      const d = new Date(dateStr + 'T12:00:00Z');
-      const day = d.getUTCDay();
-      const diff = d.getUTCDate() - day + (day === 0 ? -6 : 1);
-      const start = new Date(d.setUTCDate(diff));
-      return start.toISOString().split('T')[0];
-    };
+    const response = await fetch('http://187.127.0.145:5678/webhook/historial');
+    const data = await response.json();
 
-    const getMonthKey = (dateStr) => {
-      return dateStr.substring(0, 7);
-    };
+    const formatted = data.history.map(item => ({
+      date: item.date,
+      total: item.daily_total
+    }));
 
-    const uniqueDates = [...new Set(expenses.map(e => e.date))].sort((a, b) => new Date(b) - new Date(a));
+    res.status(200).json(formatted);
 
-    const history = uniqueDates.map(date => {
-      const dailyTotal = expenses.filter(e => e.date === date).reduce((sum, e) => sum + e.amount, 0);
-
-      const weekKey = getWeekKey(date);
-      const weeklyTotal = expenses.filter(e => getWeekKey(e.date) === weekKey).reduce((sum, e) => sum + e.amount, 0);
-
-      const monthKey = getMonthKey(date);
-      const monthlyTotal = expenses.filter(e => getMonthKey(e.date) === monthKey).reduce((sum, e) => sum + e.amount, 0);
-
-      return {
-        date,
-        daily_total: dailyTotal,
-        weekly_total: weeklyTotal,
-        monthly_total: monthlyTotal
-      };
-    });
-
-    res.status(200).json({ success: true, history });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ success: false, error: 'Failed to fetch history' });
+    res.status(500).json({ error: 'Failed to fetch history from n8n' });
   }
 });
-
 
 app.listen(PORT, () => {
   console.log(`Backend server running on http://localhost:${PORT}`);

@@ -12,6 +12,7 @@ const { google } = require('googleapis');
 const app = express();
 const PORT = process.env.PORT || 3001;
 const N8N_WEBHOOK_URL = 'http://187.127.0.145:5678/webhook/expense';
+const N8N_CONTABILIDAD_URL = 'http://187.127.0.145:5678/webhook/contabilidad';
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -69,31 +70,20 @@ app.post('/api/expense', async (req, res) => {
 });
 
 
-app.get('/api/summary', (req, res) => {
+app.get('/api/summary', async (req, res) => {
   try {
-    const today = new Date().toISOString().split('T')[0];
-
-    // Calculate totals
-    const todayTotal = expenses
-      .filter(e => e.date === today)
-      .reduce((sum, e) => sum + e.amount, 0);
-
-    // Simple mock for week/month totals (would normally use robust date math)
-    const weekTotal = expenses.reduce((sum, e) => sum + e.amount, 0);
-    const monthTotal = expenses.reduce((sum, e) => sum + e.amount, 0);
-
-    // Last 5
-    const lastExpenses = [...expenses].reverse().slice(0, 5);
+    const response = await fetch('http://187.127.0.145:5678/webhook/contabilidad');
+    const data = await response.json();
 
     res.status(200).json({
-      today_total: todayTotal,
-      week_total: weekTotal,
-      month_total: monthTotal,
-      last_expenses: lastExpenses
+      today_total: data["Total Diario"],
+      week_total: data["Total Semanal"],
+      month_total: data["Total Mes"]
     });
+
   } catch (err) {
     console.error(err);
-    res.status(500).json({ success: false, error: 'Failed to fetch summary' });
+    res.status(500).json({ error: 'Failed to fetch summary from n8n' });
   }
 });
 

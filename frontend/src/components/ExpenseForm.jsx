@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 
-const CATEGORIES = ['Nafta', 'Transporte', 'Lavadero', 'Otro'];
+const CATEGORIES = ['Nafta', 'Transporte', 'Lavadero', 'Comida', 'Otro'];
 
 function ExpenseForm({ onSaved, apiBase }) {
     const [formData, setFormData] = useState({
         amount: '',
-        category: 'Comida',
+        category: '',
         description: '',
         date: new Date().toISOString().split('T')[0]
     });

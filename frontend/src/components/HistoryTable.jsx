@@ -65,7 +65,7 @@ function HistoryTable({ data, loading }) {
 
         doc.save('Historial_Gastos.pdf');
     };
-
+    console.log(data); 
     return (
         <div className="space-y-4">
             <div className="flex justify-between items-center px-1">

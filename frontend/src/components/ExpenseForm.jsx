@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const CATEGORIES = ['Nafta', 'Transporte', 'Lavadero', 'Comida', 'Otro'];
+const CATEGORIES = ['Transporte', 'Lavadero', 'Comida','Nafta', 'Otro'];
 
 function ExpenseForm({ onSaved, apiBase }) {
     const [formData, setFormData] = useState({
@@ -25,7 +25,9 @@ function ExpenseForm({ onSaved, apiBase }) {
         setStatusText('Saving...');
 
         try {
+            console.log("ENVIANDO:", formData);
             /*const response = await fetch(`${apiBase}/expense`, {*/
+                
                 const response = await fetch('http://187.127.0.145:3001/api/expense', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -99,6 +101,9 @@ function ExpenseForm({ onSaved, apiBase }) {
                                 onChange={handleChange}
                                 className="w-full bg-white border-2 border-slate-100 rounded-xl py-3 px-4 text-sm font-semibold text-slate-700 outline-none appearance-none focus:border-expense-500 focus:ring-4 focus:ring-expense-500/10 transition-all cursor-pointer"
                             >
+                            <option value="" disabled>
+                                Seleccionar
+                            </option>
                                 {CATEGORIES.map(cat => (
                                     <option key={cat} value={cat}>{cat}</option>
                                 ))}

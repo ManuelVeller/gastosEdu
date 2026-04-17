@@ -34,7 +34,10 @@ function ExpenseForm({ onSaved, apiBase }) {
                 body: JSON.stringify({
                     ...formData,
                     amount: parseFloat(formData.amount),
-                    timestamp: new Date().toISOString()
+                    timestamp: new Date().toLocaleString('es-AR', {
+                                timeZone: 'America/Argentina/Buenos_Aires',
+                                hour12: false
+                    })
                 })
             });
 

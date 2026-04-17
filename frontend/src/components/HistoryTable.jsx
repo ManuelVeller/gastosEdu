@@ -2,6 +2,8 @@ import React from 'react';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+const response = await fetch('http://187.127.0.145:5678/webhook/contabilidad');
+const data = await response.json();
 
 function HistoryTable({ data, loading }) {
     if (loading) {

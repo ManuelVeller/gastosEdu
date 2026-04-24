@@ -27,8 +27,8 @@ function ExpenseForm({ onSaved, apiBase }) {
         try {
             console.log("ENVIANDO:", formData);
             /*const response = await fetch(`${apiBase}/expense`, {*/
-                                    //fetch('http://187.127.0.145:3001/api/expense
-                const response = await fetch('https://n8n.emmevp.com/webhook/expensa', {
+                                            //'http://187.127.0.145:3001/api/expense'
+                const response = await fetch('https://app.emmevp.com/api/expense', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

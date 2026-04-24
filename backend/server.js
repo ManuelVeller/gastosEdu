@@ -72,8 +72,8 @@ app.post('/api/expense', async (req, res) => {
 
 app.get('/api/summary', async (req, res) => {
   try {
-    const response = await fetch('https://n8n.emmevp.com/webhook/contabilidad');
-    const data = await response.json();
+    //const response = await fetch('https://n8n.emmevp.com/webhook/contabilidad');
+    //const data = await response.json();
 
     res.status(200).json({
       today_total: data["Total Diario"],
@@ -105,9 +105,13 @@ app.get('/api/history', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
+/*app.listen(PORT, () => {
   console.log(`Backend server running on http://localhost:${PORT}`);
+}); */
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Backend server running on port ${PORT}`);
 });
+
 
 app.get('/', (req, res) => {
   res.send('Backend funcionando OK');

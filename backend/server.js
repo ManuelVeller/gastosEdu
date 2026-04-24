@@ -11,8 +11,8 @@ const { google } = require('googleapis');
 );*/
 const app = express();
 const PORT = process.env.PORT || 3001;
-const N8N_WEBHOOK_URL = 'http://187.127.0.145:5678/webhook/expense';
-const N8N_CONTABILIDAD_URL = 'http://187.127.0.145:5678/webhook/contabilidad';
+const N8N_WEBHOOK_URL = 'https://n8n.emmevp.com/webhook/expense';
+//const N8N_CONTABILIDAD_URL = 'https://n8n.emmevp.com/webhook/contabilidad';
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -72,7 +72,7 @@ app.post('/api/expense', async (req, res) => {
 
 app.get('/api/summary', async (req, res) => {
   try {
-    const response = await fetch('http://187.127.0.145:5678/webhook/contabilidad');
+    const response = await fetch('https://n8n.emmevp.com/webhook/contabilidad');
     const data = await response.json();
 
     res.status(200).json({
@@ -89,7 +89,7 @@ app.get('/api/summary', async (req, res) => {
 
 app.get('/api/history', async (req, res) => {
   try {
-    const response = await fetch('http://187.127.0.145:5678/webhook/historial');
+    const response = await fetch('https://n8n.emmevp.com/webhook/historial');
     const data = await response.json();
 
     const formatted = data.history.map(item => ({

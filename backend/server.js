@@ -87,7 +87,7 @@ app.post('/api/expense', async (req, res) => {
   }
 }); */
 
-app.get('/api/history', async (req, res) => {
+/*app.get('/api/history', async (req, res) => {
   try {
     const response = await fetch('https://n8n.emmevp.com/webhook/historial');
     const data = await response.json();
@@ -103,7 +103,7 @@ app.get('/api/history', async (req, res) => {
     console.error(err);
     res.status(500).json({ error: 'Failed to fetch history from n8n' });
   }
-});
+}); */ 
 
 /*app.listen(PORT, () => {
   console.log(`Backend server running on http://localhost:${PORT}`);

@@ -11,8 +11,13 @@ const { google } = require('googleapis');
 );*/
 const app = express();
 const PORT = process.env.PORT || 3001;
+<<<<<<< HEAD
 const N8N_WEBHOOK_URL = 'https://app.emmevp.com/webhook/expense';
 const N8N_CONTABILIDAD_URL = 'https://n8n.emmevp.com/webhook/contabilidad';
+=======
+const N8N_WEBHOOK_URL = 'https://n8n.emmevp.com/webhook/expense';
+//const N8N_CONTABILIDAD_URL = 'https://n8n.emmevp.com/webhook/contabilidad';
+>>>>>>> dev
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -72,7 +77,12 @@ app.post('/api/expense', async (req, res) => {
 
 app.get('/api/summary', async (req, res) => {
   try {
+<<<<<<< HEAD
     cn();
+=======
+    const response = await fetch('https://n8n.emmevp.com/webhook/contabilidad');
+    const data = await response.json();
+>>>>>>> dev
 
     res.status(200).json({
       today_total: data["Total Diario"],

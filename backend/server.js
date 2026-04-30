@@ -70,7 +70,7 @@ app.post('/api/expense', async (req, res) => {
 });
 
 
-app.get('/api/summary', async (req, res) => {
+/* app.get('/api/summary', async (req, res) => {
   try {
     const response = await fetch('https://n8n.emmevp.com/webhook/history');
     const data = await response.json();
@@ -86,9 +86,9 @@ app.get('/api/summary', async (req, res) => {
     console.error("Error en summary: ", err);
     res.status(500).json({ error: 'Failed to fetch summary from n8n' });
   }
-});
+}); */
 
-app.get('/api/history', async (req, res) => {
+/*app.get('/api/history', async (req, res) => {
   try {
     const response = await fetch('https://n8n.emmevp.com/webhook/history');
     const data = await response.json();
@@ -104,11 +104,15 @@ app.get('/api/history', async (req, res) => {
     console.error(err);
     res.status(500).json({ error: 'Failed to fetch history from n8n' });
   }
+}); */ 
+
+/*app.listen(PORT, () => {
+  console.log(`Backend server running on http://localhost:${PORT}`);
+}); */
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Backend server running on port ${PORT}`);
 });
 
-app.listen(PORT, () => {
-  console.log(`Backend server running on http://localhost:${PORT}`);
-});
 
 app.get('/', (req, res) => {
   res.send('Backend funcionando OK');

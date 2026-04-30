@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const CATEGORIES = ['Transporte', 'Lavadero', 'Comida','Nafta', 'Otro'];
+const CATEGORIES = ['Transporte', 'Lavadero', 'Comida','Nafta','Estacionamiento', 'Otro'];
 
 function ExpenseForm({ onSaved, apiBase }) {
     const [formData, setFormData] = useState({

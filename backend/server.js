@@ -12,7 +12,7 @@ const { google } = require('googleapis');
 const app = express();
 const PORT = process.env.PORT || 3001;
 const N8N_WEBHOOK_URL = 'https://n8n.emmevp.com/webhook/expense';
-const N8N_CONTABILIDAD_URL = 'https://n8n.emmevp.com/webhook/history';
+
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -70,10 +70,11 @@ app.post('/api/expense', async (req, res) => {
 });
 
 
-/* app.get('/api/summary', async (req, res) => {
+app.get('/api/summary', async (req, res) => {
   try {
-    const response = await fetch('https://n8n.emmevp.com/webhook/history');
+    const response = await fetch('https://n8n.emmevp.com/webhook/expense');
     const data = await response.json();
+    console.log("n8n me respondió esto: ", data); 
     const actual = data[0] || {};
 
     res.status(200).json({
@@ -86,11 +87,11 @@ app.post('/api/expense', async (req, res) => {
     console.error("Error en summary: ", err);
     res.status(500).json({ error: 'Failed to fetch summary from n8n' });
   }
-}); */
+}); 
 
-/*app.get('/api/history', async (req, res) => {
+app.get('/api/history', async (req, res) => {
   try {
-    const response = await fetch('https://n8n.emmevp.com/webhook/history');
+    const response = await fetch('https://n8n.emmevp.com/webhook/expense');
     const data = await response.json();
 
     const formatted = data.map(item => ({
@@ -104,7 +105,7 @@ app.post('/api/expense', async (req, res) => {
     console.error(err);
     res.status(500).json({ error: 'Failed to fetch history from n8n' });
   }
-}); */ 
+}); 
 
 /*app.listen(PORT, () => {
   console.log(`Backend server running on http://localhost:${PORT}`);

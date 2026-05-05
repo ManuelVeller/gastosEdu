@@ -16,7 +16,7 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   // Backend API URL (for demo sake, hardcoded or env)
-  const API_BASE = 'http://187.127.0.145:3001/api';
+  const API_BASE = '[https://app.emmevp.com/api]';
 
   const fetchSummary = async () => {
     try {

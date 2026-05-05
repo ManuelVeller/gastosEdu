@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 
 const CATEGORIES = ['Transporte', 'Lavadero', 'Comida','Nafta','Estacionamiento', 'Otro'];
 
+
+
 function ExpenseForm({ onSaved, apiBase }) {
     const [formData, setFormData] = useState({
         amount: '',
         category: '',
         description: '',
+        paymentMethod: '',
         date: new Date().toISOString().split('T')[0]
     });
     const [loading, setLoading] = useState(false);
@@ -22,7 +25,7 @@ function ExpenseForm({ onSaved, apiBase }) {
         if (!formData.amount) return;
 
         setLoading(true);
-        setStatusText('Saving...');
+        setStatusText('Guardando...');
 
         try {
             console.log("ENVIANDO:", formData);
@@ -42,7 +45,9 @@ function ExpenseForm({ onSaved, apiBase }) {
             });
 
             if (response.ok) {
-                setStatusText('Saved!');
+                setStatusText('Guardado!');
+                const dataFromN8n = await response.json();
+                if (typeof setData === 'function') setData(dataFromN8n);
                 // Reset form, keep date and category but clear amounts
                 setFormData(prev => ({ ...prev, amount: '', description: '' }));
                 if (onSaved) onSaved();
@@ -133,6 +138,25 @@ function ExpenseForm({ onSaved, apiBase }) {
 
             </div>
 
+                <div className="relative">
+            <select
+                name="paymentMethod"
+                value={formData.paymentMethod}
+                onChange={handleChange}
+                className="w-full bg-white border-2 border-slate-100 rounded-xl py-3 px-4 text-sm font-semibold text-slate-700 outline-none appearance-none focus:border-expense-500 focus:ring-4 focus:ring-expense-500/10 transition-all cursor-pointer"
+            >
+                <option value="MP">MP</option>
+                <option value="Efectivo">Efectivo</option>
+                <option value="Tarjeta">Tarjeta</option>
+                <option value="Otro">Otro</option>
+            </select>
+            {/* Este es el triangulito que ya tenés en el otro select */}
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
+                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                </svg>
+            </div>
+        </div>                       
             <button
                 type="submit"
                 disabled={loading}
@@ -142,6 +166,11 @@ function ExpenseForm({ onSaved, apiBase }) {
             </button>
         </form>
     );
+
+
+
+
+
 }
 
 export default ExpenseForm;

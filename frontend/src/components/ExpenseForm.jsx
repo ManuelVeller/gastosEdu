@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
+import { supabase } from '../supabaseClient';
 
 const CATEGORIES = ['Transporte', 'Lavadero', 'Comida','Nafta','Estacionamiento', 'Otro'];
 
-
-
-function ExpenseForm({ onSaved, apiBase }) {
+function ExpenseForm({ onSaved, user }) {
     const [formData, setFormData] = useState({
-        amount: '',
-        category: '',
-        description: '',
-        paymentMethod: '',
-        date: new Date().toISOString().split('T')[0]
+        monto: '',
+        categoria: '',
+        descripcion: '',
+        metodo_pago: 'MP', // Default
+        fecha_gasto: new Date().toISOString().split('T')[0]
     });
     const [loading, setLoading] = useState(false);
     const [statusText, setStatusText] = useState('');
@@ -22,41 +21,31 @@ function ExpenseForm({ onSaved, apiBase }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!formData.amount) return;
+        if (!formData.monto) return;
 
         setLoading(true);
         setStatusText('Guardando...');
 
         try {
-            console.log("ENVIANDO:", formData);
-            /*const response = await fetch(`${apiBase}/expense`, {*/
-                                            //'http://187.127.0.145:3001/api/expense'
-                const response = await fetch('https://app.emmevp.com/api/expense', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    ...formData,
-                    amount: parseFloat(formData.amount),
-                    paymentMethod: formData.paymentMethod,
-                    timestamp: new Date().toLocaleString('es-AR', {
-                                timeZone: 'America/Argentina/Buenos_Aires',
-                                hour12: false
-                    })
-                })
-            });
+            const gastoToInsert = {
+                ...formData,
+                monto: parseFloat(formData.monto),
+                usuario_id: user?.id 
+            };
 
-            if (response.ok) {
-                setStatusText('Guardado!');
-                const dataFromN8n = await response.json();
-                if (typeof setData === 'function') setData(dataFromN8n);
-                // Reset form, keep date and category but clear amounts
-                setFormData(prev => ({ ...prev, amount: '', description: '' }));
-                if (onSaved) onSaved();
-            } else {
-                setStatusText('Error saving');
-            }
+            const { data, error } = await supabase
+                .from('gastos')
+                .insert([gastoToInsert]);
+
+            if (error) throw error;
+
+            setStatusText('Guardado!');
+            setFormData(prev => ({ ...prev, monto: '', descripcion: '' }));
+            if (onSaved) onSaved();
+            
         } catch (err) {
-            setStatusText('Network error');
+            console.error(err);
+            setStatusText('Error al guardar');
         } finally {
             setTimeout(() => setStatusText(''), 3000);
             setLoading(false);
@@ -67,15 +56,15 @@ function ExpenseForm({ onSaved, apiBase }) {
         <form onSubmit={handleSubmit} className="space-y-5">
             <div className="bg-white rounded-[1.5rem] p-5 shadow-sm border border-slate-100 flex flex-col space-y-5 bg-gradient-to-b from-white to-slate-50/50">
 
-                {/* Amount */}
+                {/* Monto */}
                 <div className="relative">
                     <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block px-1">Monto</label>
                     <div className="relative flex items-center">
                         <span className="absolute left-5 text-2xl font-black text-slate-300">$</span>
                         <input
                             type="number"
-                            name="amount"
-                            value={formData.amount}
+                            name="monto"
+                            value={formData.monto}
                             onChange={handleChange}
                             step="0.01"
                             min="0"
@@ -87,32 +76,31 @@ function ExpenseForm({ onSaved, apiBase }) {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                    {/* Date */}
+                    {/* Fecha */}
                     <div>
                         <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block px-1">Fecha</label>
                         <input
                             type="date"
-                            name="date"
-                            value={formData.date}
+                            name="fecha_gasto"
+                            value={formData.fecha_gasto}
                             onChange={handleChange}
                             required
                             className="w-full bg-white border-2 border-slate-100 rounded-xl py-3 px-4 text-sm font-semibold text-slate-700 outline-none focus:border-expense-500 focus:ring-4 focus:ring-expense-500/10 transition-all"
                         />
                     </div>
 
-                    {/* Category */}
+                    {/* Categoría */}
                     <div>
-                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block px-1">Categoria</label>
+                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block px-1">Categoría</label>
                         <div className="relative">
                             <select
-                                name="category"
-                                value={formData.category}
+                                name="categoria"
+                                value={formData.categoria}
                                 onChange={handleChange}
+                                required
                                 className="w-full bg-white border-2 border-slate-100 rounded-xl py-3 px-4 text-sm font-semibold text-slate-700 outline-none appearance-none focus:border-expense-500 focus:ring-4 focus:ring-expense-500/10 transition-all cursor-pointer"
                             >
-                            <option value="" disabled>
-                                Seleccionar
-                            </option>
+                                <option value="" disabled>Seleccionar</option>
                                 {CATEGORIES.map(cat => (
                                     <option key={cat} value={cat}>{cat}</option>
                                 ))}
@@ -124,13 +112,13 @@ function ExpenseForm({ onSaved, apiBase }) {
                     </div>
                 </div>
 
-                {/* Description */}
+                {/* Descripción */}
                 <div>
-                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block px-1">Descripcion (Opcional)</label>
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block px-1">Descripción (Opcional)</label>
                     <input
                         type="text"
-                        name="description"
-                        value={formData.description}
+                        name="descripcion"
+                        value={formData.descripcion}
                         onChange={handleChange}
                         placeholder="¿Por qué motivo?"
                         className="w-full bg-white border-2 border-slate-100 rounded-xl py-3 px-4 text-sm font-medium text-slate-700 outline-none focus:border-expense-500 focus:ring-4 focus:ring-expense-500/10 transition-all placeholder:text-slate-300"
@@ -139,25 +127,25 @@ function ExpenseForm({ onSaved, apiBase }) {
 
             </div>
 
-                <div className="relative">
-            <select
-                name="paymentMethod"
-                value={formData.paymentMethod}
-                onChange={handleChange}
-                className="w-full bg-white border-2 border-slate-100 rounded-xl py-3 px-4 text-sm font-semibold text-slate-700 outline-none appearance-none focus:border-expense-500 focus:ring-4 focus:ring-expense-500/10 transition-all cursor-pointer"
-            >
-                <option value="MP">MP</option>
-                <option value="Efectivo">Efectivo</option>
-                <option value="Tarjeta">Tarjeta</option>
-                <option value="Otro">Otro</option>
-            </select>
-            {/* Este es el triangulito que ya tenés en el otro select */}
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
-                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                </svg>
-            </div>
-        </div>                       
+            <div className="relative">
+                <select
+                    name="metodo_pago"
+                    value={formData.metodo_pago}
+                    onChange={handleChange}
+                    className="w-full bg-white border-2 border-slate-100 rounded-xl py-3 px-4 text-sm font-semibold text-slate-700 outline-none appearance-none focus:border-expense-500 focus:ring-4 focus:ring-expense-500/10 transition-all cursor-pointer"
+                >
+                    <option value="MP">MP</option>
+                    <option value="Efectivo">Efectivo</option>
+                    <option value="Tarjeta">Tarjeta</option>
+                    <option value="Otro">Otro</option>
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
+                    <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                        <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                    </svg>
+                </div>
+            </div>                       
+            
             <button
                 type="submit"
                 disabled={loading}
@@ -167,11 +155,6 @@ function ExpenseForm({ onSaved, apiBase }) {
             </button>
         </form>
     );
-
-
-
-
-
 }
 
 export default ExpenseForm;

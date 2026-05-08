@@ -1,95 +1,104 @@
 import React, { useState, useEffect } from 'react';
-import ExpenseForm from './components/ExpenseForm';
-import Dashboard from './components/Dashboard';
-import HistoryTable from './components/HistoryTable';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { supabase } from './supabaseClient';
+import LoginForm from './components/LoginForm';
+import EmployeeDashboard from './components/EmployeeDashboard';
+import AdminDashboard from './components/AdminDashboard';
 
 function App() {
-  const [activeTab, setActiveTab] = useState('dashboard');
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const [summaryData, setSummaryData] = useState({
-    today_total: 0,
-    week_total: 0,
-    month_total: 0,
-    last_expenses: []
-  });
-  const [historyData, setHistoryData] = useState([]);
+  const [session, setSession] = useState(null);
+  const [perfil, setPerfil] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  // Backend API URL (for demo sake, hardcoded or env)
-  const API_BASE = '[https://app.emmevp.com/api]';
-
-  const fetchSummary = async () => {
-    try {
-      setLoading(true);
-      const [summaryRes, historyRes] = await Promise.all([
-        fetch(`${API_BASE}/summary`),
-        fetch(`${API_BASE}/history`)
-      ]);
-
-      if (summaryRes.ok) {
-        const data = await summaryRes.json();
-        setSummaryData(data);
+  useEffect(() => {
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session) {
+        fetchPerfil(session.user.id);
+      } else {
+        setLoading(false);
       }
-      if (historyRes.ok) {
-        const hData = await historyRes.json();
-        setHistoryData(hData);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (session) {
+        fetchPerfil(session.user.id);
+      } else {
+        setPerfil(null);
+        setLoading(false);
+        navigate('/login');
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  const fetchPerfil = async (userId) => {
+    try {
+      const { data, error } = await supabase
+        .from('perfiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      
+      if (error) throw error;
+      setPerfil(data);
+
+      if (data?.rol === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/employee');
       }
     } catch (err) {
-      console.error('Failed to fetch data:', err);
+      console.error('Error fetching perfil:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchSummary();
-  }, [refreshTrigger]);
-
-  const handleExpenseSaved = () => {
-    // Refresh the dashboard data
-    setRefreshTrigger(prev => prev + 1);
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
   };
 
-  return (
-    <div className="min-h-screen bg-slate-50 flex justify-center p-4 sm:p-6 font-sans">
-      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col h-[90vh] max-h-[850px] relative">
-        <header className="bg-expense-600 text-white p-6 pb-8 text-center rounded-b-[2rem] shadow-md z-10 relative">
-          <h1 className="text-2xl font-bold tracking-tight mb-2">Mis Gastos</h1>
-          <p className="text-expense-100/80 text-sm font-medium"></p>
-        </header>
-
-        <div className="flex-1 overflow-y-auto z-0 -mt-6 pt-10 px-6 pb-6 space-y-8 no-scrollbar relative">
-          <section>
-            <ExpenseForm onSaved={handleExpenseSaved} apiBase={API_BASE} />
-          </section>
-
-          <hr className="border-slate-100" />
-
-          <div className="flex bg-slate-100 p-1 rounded-xl">
-            <button
-              onClick={() => setActiveTab('dashboard')}
-              className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${activeTab === 'dashboard' ? 'bg-white text-expense-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-            >
-              Resumen
-            </button>
-            <button
-              onClick={() => setActiveTab('history')}
-              className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${activeTab === 'history' ? 'bg-white text-expense-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-            >
-              Historial
-            </button>
-          </div>
-
-          <section>
-            {activeTab === 'dashboard' ? (
-              <Dashboard data={summaryData} loading={loading} />
-            ) : (
-              <HistoryTable data={historyData} loading={loading} />
-            )}
-          </section>
-        </div>
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <p className="text-slate-500 font-medium">Cargando aplicación...</p>
       </div>
-    </div>
+    );
+  }
+
+  return (
+    <Routes>
+      <Route 
+        path="/login" 
+        element={!session ? <LoginForm /> : <Navigate to={perfil?.rol === 'admin' ? '/admin' : '/employee'} />} 
+      />
+      
+      <Route 
+        path="/employee" 
+        element={
+          session && perfil?.rol === 'empleado' 
+            ? <EmployeeDashboard user={session.user} onLogout={handleLogout} /> 
+            : <Navigate to="/login" />
+        } 
+      />
+      
+      <Route 
+        path="/admin" 
+        element={
+          session && perfil?.rol === 'admin' 
+            ? <AdminDashboard user={session.user} onLogout={handleLogout} /> 
+            : <Navigate to="/login" />
+        } 
+      />
+
+      <Route path="*" element={<Navigate to="/login" />} />
+    </Routes>
   );
 }
 
